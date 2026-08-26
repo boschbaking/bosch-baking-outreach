@@ -1,0 +1,6 @@
+[build]
+  command = "next build"
+  # deploy-cache-buster: 2026-08-25-1
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
