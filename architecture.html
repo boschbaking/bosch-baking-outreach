@@ -1,0 +1,418 @@
+<title>Outreach System Blueprint</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --navy: #001630;
+    --navy-soft: #0e2743;
+    --gold: #c9a95a;
+    --gold-deep: #93732f;
+    --paper: #ffffff;
+    --paper-sunk: #f6f5f2;
+    --ink: #1c2530;
+    --ink-soft: #55606d;
+    --line: #e3e1d8;
+    --good: #2f6f4e;
+    --warn: #93732f;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --navy: #cfae6c;
+      --navy-soft: #e6cd94;
+      --gold: #d8bb78;
+      --gold-deep: #e6cd94;
+      --paper: #0a1420;
+      --paper-sunk: #0f1c2c;
+      --ink: #e7e9ec;
+      --ink-soft: #a4aebb;
+      --line: #223349;
+      --good: #6fbf94;
+      --warn: #d8bb78;
+    }
+  }
+  :root[data-theme="dark"] {
+    --navy: #cfae6c;
+    --navy-soft: #e6cd94;
+    --gold: #d8bb78;
+    --gold-deep: #e6cd94;
+    --paper: #0a1420;
+    --paper-sunk: #0f1c2c;
+    --ink: #e7e9ec;
+    --ink-soft: #a4aebb;
+    --line: #223349;
+    --good: #6fbf94;
+    --warn: #d8bb78;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Inter", -apple-system, "Segoe UI", sans-serif;
+    line-height: 1.6;
+  }
+  h1, h2, h3 { font-family: "Fraunces", Georgia, serif; text-wrap: balance; color: var(--navy); font-weight: 500; }
+  code, .mono, table.schema td.type, .badge { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+
+  a { color: var(--gold-deep); }
+
+  .shell { display: flex; max-width: 1180px; margin: 0 auto; }
+
+  nav.toc {
+    width: 230px; flex-shrink: 0; position: sticky; top: 0; align-self: flex-start;
+    height: 100vh; overflow-y: auto; padding: 3rem 1.25rem 3rem 0;
+  }
+  nav.toc a {
+    display: block; font-size: 0.8rem; color: var(--ink-soft); text-decoration: none;
+    padding: 0.3rem 0; border-left: 2px solid transparent; padding-left: 0.75rem;
+  }
+  nav.toc a:hover, nav.toc a.active { color: var(--navy); border-left-color: var(--gold); }
+  nav.toc .toc-num { color: var(--gold-deep); margin-right: 0.4em; }
+
+  main { flex: 1; min-width: 0; padding: 3.5rem 2.5rem 6rem; max-width: 760px; }
+
+  header.masthead { margin-bottom: 3.5rem; padding-bottom: 2rem; border-bottom: 1px solid var(--line); }
+  header.masthead .eyebrow {
+    font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold-deep);
+    font-weight: 600; margin-bottom: 0.75rem;
+  }
+  header.masthead h1 { font-size: 2.35rem; margin: 0 0 0.6rem; }
+  header.masthead p { color: var(--ink-soft); font-size: 1.02rem; margin: 0; max-width: 60ch; }
+
+  .status-row { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 1.5rem; }
+  .status-pill {
+    font-size: 0.72rem; padding: 0.3rem 0.7rem; border-radius: 3px; border: 1px solid var(--line);
+    color: var(--ink-soft); display: inline-flex; align-items: center; gap: 0.4em;
+  }
+  .status-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--good); flex-shrink: 0; }
+
+  section { margin-bottom: 3.25rem; scroll-margin-top: 1.5rem; }
+  section > .section-num {
+    font-family: "IBM Plex Mono"; font-size: 0.75rem; color: var(--gold-deep); letter-spacing: 0.08em;
+  }
+  section h2 { font-size: 1.55rem; margin: 0.25rem 0 1rem; }
+  section h3 { font-size: 1.08rem; margin: 1.75rem 0 0.6rem; }
+  p { color: var(--ink); }
+  section p, section li { color: var(--ink-soft); }
+  section ul, section ol { padding-left: 1.3rem; }
+  section li { margin-bottom: 0.4rem; }
+  section li strong { color: var(--ink); }
+
+  .callout {
+    border-left: 3px solid var(--gold); background: var(--paper-sunk); padding: 0.9rem 1.1rem;
+    border-radius: 0 4px 4px 0; font-size: 0.92rem; margin: 1.25rem 0;
+  }
+  .callout strong { color: var(--navy); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 1rem 0; }
+  table.schema th, table.schema td { text-align: left; padding: 0.5rem 0.7rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.schema th { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-soft); font-weight: 600; }
+  table.schema td.type { color: var(--gold-deep); white-space: nowrap; }
+  .table-wrap { overflow-x: auto; }
+
+  .page-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 0.75rem; margin: 1rem 0; }
+  .page-card { border: 1px solid var(--line); border-radius: 4px; padding: 0.85rem 1rem; background: var(--paper-sunk); }
+  .page-card .path { font-family: "IBM Plex Mono"; font-size: 0.72rem; color: var(--gold-deep); display: block; margin-bottom: 0.3rem; }
+  .page-card p { margin: 0; font-size: 0.83rem; color: var(--ink-soft); }
+
+  .flow { counter-reset: step; list-style: none; padding: 0; margin: 1.25rem 0; }
+  .flow li {
+    counter-increment: step; position: relative; padding-left: 2.4rem; margin-bottom: 1.1rem; font-size: 0.94rem;
+  }
+  .flow li::before {
+    content: counter(step); position: absolute; left: 0; top: -0.05rem; width: 1.7rem; height: 1.7rem;
+    border: 1px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-family: "IBM Plex Mono"; font-size: 0.78rem; color: var(--gold-deep);
+  }
+
+  .check { color: var(--good); font-weight: 600; }
+  .open { color: var(--warn); font-weight: 600; }
+
+  code.inline { background: var(--paper-sunk); padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.85em; }
+
+  footer.note { border-top: 1px solid var(--line); padding-top: 1.5rem; margin-top: 4rem; font-size: 0.82rem; color: var(--ink-soft); }
+
+  @media (max-width: 860px) {
+    nav.toc { display: none; }
+    main { padding: 2.25rem 1.25rem 4rem; }
+  }
+</style>
+
+<div class="shell">
+  <nav class="toc">
+    <a href="#architecture"><span class="toc-num">01</span>Architecture</a>
+    <a href="#schema"><span class="toc-num">02</span>Database schema</a>
+    <a href="#pages"><span class="toc-num">03</span>Main pages</a>
+    <a href="#flow"><span class="toc-num">04</span>User flow</a>
+    <a href="#security"><span class="toc-num">05</span>Security</a>
+    <a href="#sending"><span class="toc-num">06</span>Email sending</a>
+    <a href="#phase1"><span class="toc-num">07</span>Phase 1 — delivered</a>
+    <a href="#changes"><span class="toc-num">08</span>Recommendations</a>
+  </nav>
+
+  <main>
+    <header class="masthead">
+      <div class="eyebrow">Bosch Baking &middot; Outreach System</div>
+      <h1>Architecture &amp; Build Blueprint</h1>
+      <p>
+        The plan behind the prospect research, drafting, and approval system — and a record
+        of exactly what's live in Phase 1. Read this alongside the app itself; nothing here
+        is aspirational copy, it's what got built.
+      </p>
+      <div class="status-row">
+        <span class="status-pill"><span class="dot"></span>Database live — Supabase</span>
+        <span class="status-pill"><span class="dot"></span>App built &amp; verified — Next.js 16</span>
+        <span class="status-pill" style="border-color:var(--gold)"><span class="dot" style="background:var(--warn)"></span>Deploy — one step left</span>
+      </div>
+    </header>
+
+    <section id="architecture">
+      <div class="section-num">01</div>
+      <h2>Architecture</h2>
+      <p>
+        A single Next.js 16 application (App Router, TypeScript, Tailwind) handles both the
+        UI and the backend — every write goes through a Route Handler under
+        <code class="inline">/api/*</code>, which talks to Supabase and, for drafting, the
+        Claude API. There's no separate backend service to keep in sync.
+      </p>
+      <ul>
+        <li><strong>Frontend</strong> — Next.js App Router. Server Components fetch and render
+          prospect/draft data directly from Supabase (no client-side data-fetching layer to
+          maintain); interactive pieces (editing, drag-and-drop, filters) are small Client
+          Components layered on top.</li>
+        <li><strong>Backend</strong> — Next.js Route Handlers under <code class="inline">app/api/</code>.
+          Each one authenticates the request via the Supabase session cookie, then reads or
+          writes through Supabase's row-level security — there's no separate service-role
+          admin key to protect.</li>
+        <li><strong>Database &amp; auth</strong> — Supabase (Postgres + built-in auth). Sign-in
+          is passwordless email links, so there's no password to store or leak.</li>
+        <li><strong>AI</strong> — Claude API, called from one module
+          (<code class="inline">lib/ai/</code>). Drafting logic, quality checks, and the voice
+          rules all live there, isolated from the routes that call them — swapping models or
+          providers later is a change in one place.</li>
+        <li><strong>Email sending</strong> (Phase 3, not yet wired) — planned around Resend,
+          behind the same kind of provider-agnostic module as the AI layer. See §06.</li>
+      </ul>
+      <div class="callout">
+        <strong>Why this shape:</strong> a wholesale bakery's outreach tool doesn't need
+        microservices — it needs one system Brandon can trust, that's cheap to run, and where
+        "swap the AI provider" or "swap the email provider" is a single-file change rather
+        than a rewrite.
+      </div>
+    </section>
+
+    <section id="schema">
+      <div class="section-num">02</div>
+      <h2>Database schema</h2>
+      <p>
+        15 tables, all under Postgres row-level security (only signed-in users can read or
+        write anything). Every table has <code class="inline">created_at</code>; the ones
+        that change over time also carry <code class="inline">updated_at</code>, kept current
+        by a trigger.
+      </p>
+
+      <h3>Core sales objects</h3>
+      <div class="table-wrap">
+        <table class="schema">
+          <tr><th>Table</th><th>Holds</th><th>Key fields</th></tr>
+          <tr><td><strong>prospects</strong></td><td>Every business you might sell bread to</td>
+            <td class="type">status, business_type, likely_bread_needs[], research_notes, why_emailing, prospect_score, do_not_contact, customer_relationship</td></tr>
+          <tr><td><strong>contacts</strong></td><td>Extra people at a prospect beyond the primary contact</td>
+            <td class="type">prospect_id, name, title, email</td></tr>
+          <tr><td><strong>notes</strong></td><td>Freeform sales notes, timestamped and attributed</td>
+            <td class="type">prospect_id, author_id, note</td></tr>
+          <tr><td><strong>campaigns</strong></td><td>Named pushes ("San Diego Burger Restaurants")</td>
+            <td class="type">campaign_type, filters, sending_schedule, follow_up_sequence_id</td></tr>
+        </table>
+      </div>
+
+      <h3>Drafting &amp; sending</h3>
+      <div class="table-wrap">
+        <table class="schema">
+          <tr><th>Table</th><th>Holds</th><th>Key fields</th></tr>
+          <tr><td><strong>email_drafts</strong></td><td>Every AI draft, versioned</td>
+            <td class="type">campaign_type, subject, body, edited_body, quality_score, quality_check, status, version</td></tr>
+          <tr><td><strong>email_sends</strong></td><td>Actual send attempts once Phase 3 is on</td>
+            <td class="type">email_draft_id, sequence_step, status, scheduled_for, provider_message_id</td></tr>
+          <tr><td><strong>follow_up_sequences</strong></td><td>Wait-N-days rules per campaign</td>
+            <td class="type">steps (jsonb: step, wait_business_days)</td></tr>
+          <tr><td><strong>replies</strong></td><td>Inbound replies and their classification</td>
+            <td class="type">classification, suggested_reply, suggested_reply_approved, handled</td></tr>
+          <tr><td><strong>sample_requests</strong></td><td>The sample-drop workflow</td>
+            <td class="type">products[], currently_using, preferred_sample_date, status</td></tr>
+        </table>
+      </div>
+
+      <h3>Voice, safety &amp; audit</h3>
+      <div class="table-wrap">
+        <table class="schema">
+          <tr><th>Table</th><th>Holds</th><th>Key fields</th></tr>
+          <tr><td><strong>voice_examples</strong></td><td>Emails you've marked as good/very good/do-not-use</td>
+            <td class="type">body, rating, campaign_type</td></tr>
+          <tr><td><strong>voice_settings</strong></td><td>Single row — your banned/preferred phrases, tone</td>
+            <td class="type">banned_phrases[], preferred_phrases[], preferred_cta_style</td></tr>
+          <tr><td><strong>sending_settings</strong></td><td>Single row — daily caps, sending windows</td>
+            <td class="type">max_daily_sends, weekdays_only, sending_window_start/end</td></tr>
+          <tr><td><strong>suppression_list</strong></td><td>Permanent do-not-email list</td>
+            <td class="type">type (email/domain/business), value, reason</td></tr>
+          <tr><td><strong>users</strong></td><td>Mirrors Supabase auth users</td>
+            <td class="type">email, full_name, role</td></tr>
+          <tr><td><strong>activity_log</strong></td><td>Everything that happened, to everything</td>
+            <td class="type">prospect_id, actor_id, action, details</td></tr>
+        </table>
+      </div>
+
+      <p style="font-size:0.85rem;">
+        Full <code class="inline">CREATE TABLE</code> statements are in the migration history
+        on the live Supabase project (<code class="inline">bosch-baking-outreach</code> workspace) — every
+        column, constraint, and index is there and already applied, not just sketched.
+      </p>
+    </section>
+
+    <section id="pages">
+      <div class="section-num">03</div>
+      <h2>Main pages</h2>
+      <div class="page-grid">
+        <div class="page-card"><span class="path">/dashboard</span><p>Counts across the pipeline — new prospects, awaiting approval, sent today, replies, samples, customers won.</p></div>
+        <div class="page-card"><span class="path">/prospects</span><p>Full list with filters by status, city, business type, and search.</p></div>
+        <div class="page-card"><span class="path">/prospects/import</span><p>CSV upload — column mapping, duplicate/suppression checks, bulk tagging.</p></div>
+        <div class="page-card"><span class="path">/prospects/[id]</span><p>The workhorse page — editable business info, research notes, the internal "why am I emailing them," and draft generation.</p></div>
+        <div class="page-card"><span class="path">/approvals</span><p>Every drafted email waiting on you — preview, edit, approve, reject, regenerate, filter, bulk-approve.</p></div>
+        <div class="page-card"><span class="path">/pipeline</span><p>Drag-and-drop kanban across New → Ready → Contacted → Replied → Interested → Sample Requested → Sample Dropped → Customer.</p></div>
+        <div class="page-card"><span class="path">/login</span><p>Passwordless email-link sign-in.</p></div>
+      </div>
+    </section>
+
+    <section id="flow">
+      <div class="section-num">04</div>
+      <h2>User flow</h2>
+      <ol class="flow">
+        <li><strong>Get prospects in.</strong> Import a CSV or add one by hand. Duplicates
+          (by email) and anything on your suppression list are skipped automatically.</li>
+        <li><strong>Research.</strong> On a prospect's page, jot down what you actually know —
+          menu type, whether they do banquets, current bread supplier, whatever's real. Leave
+          the rest blank; nothing gets guessed.</li>
+        <li><strong>Draft.</strong> Pick a campaign mode (New Prospect / Lost Customer /
+          Dormant / Existing Upsell) and generate. Claude writes from your research notes and
+          your voice rules, and a fast rule-based check scores it before it ever reaches you.</li>
+        <li><strong>Approve.</strong> Every draft lands in the Approval Queue. You preview,
+          edit inline, approve, reject, or ask for a regenerate with feedback — alone or in
+          bulk, filtered by city, business type, or campaign.</li>
+        <li><strong>Track.</strong> Approved prospects move to the pipeline. Drag a card as
+          things happen — replies, sample requests, closed accounts.</li>
+      </ol>
+      <div class="callout">
+        Steps 1–4 above are live today. Sending, follow-ups, and reply tracking (the rest of
+        the loop) are Phase 3 — see §07 for exactly where the line sits.
+      </div>
+    </section>
+
+    <section id="security">
+      <div class="section-num">05</div>
+      <h2>Security considerations</h2>
+      <ul>
+        <li><strong>No service-role key in the app.</strong> Every query runs as the signed-in
+          user through Postgres row-level security, not a privileged admin key — there's
+          nothing catastrophic to leak from an env var.</li>
+        <li><strong>Passwordless auth.</strong> Magic-link sign-in means there's no password
+          database to breach, and no reused-password risk.</li>
+        <li><strong>Secrets stay server-side.</strong> The Anthropic API key never reaches the
+          browser — it's read only inside Route Handlers.</li>
+        <li><strong>Suppression is enforced at the API, not just the UI.</strong> Both the CSV
+          importer and the manual "add prospect" endpoint reject emails/domains on the
+          suppression list before they can be created — so it can't be bypassed by skipping a
+          particular screen.</li>
+        <li><strong>Do Not Contact blocks drafting.</strong> The draft-generation endpoint
+          refuses to run for a prospect flagged DNC, not just the send step later.</li>
+        <li><strong>Every write is logged.</strong> <code class="inline">activity_log</code>
+          records who changed what — useful both for your own memory and for catching
+          anything that looks wrong.</li>
+        <li><strong>Environment variables, not hardcoded values.</strong> Supabase and
+          Anthropic credentials are read from env vars everywhere; <code class="inline">.env.local</code>
+          is git-ignored.</li>
+      </ul>
+    </section>
+
+    <section id="sending">
+      <div class="section-num">06</div>
+      <h2>Email sending approach (Phase 3)</h2>
+      <p>
+        Not wired up yet — Phase 1 stops at Approved. The schema and the module boundary are
+        already in place so this is additive, not a rewrite:
+      </p>
+      <ul>
+        <li><strong>Provider:</strong> Resend, called from one module
+          (mirroring <code class="inline">lib/ai/</code>) so switching providers later touches
+          one file.</li>
+        <li><strong>Modes:</strong> Manual (draft only, you send), Assisted (you approve
+          batches, system paces the sends), Trusted (approved campaign rules send within
+          limits) — the <code class="inline">sending_mode</code> column on
+          <code class="inline">campaigns</code> already models this.</li>
+        <li><strong>Pacing:</strong> <code class="inline">sending_settings</code> already
+          holds max daily sends, weekday-only, sending window, and min/max spacing between
+          sends — a background job just needs to read it and act.</li>
+        <li><strong>Follow-ups:</strong> <code class="inline">follow_up_sequences</code>
+          stores wait-N-business-days steps per campaign; a reply, or a status of Not
+          Interested / Customer / Do Not Contact, halts the sequence.</li>
+        <li><strong>Replies:</strong> inbound parsing (via Resend's webhook or an inbox
+          integration) writes to <code class="inline">replies</code>, gets classified, and
+          drafts a suggested reply — which, like everything else here, you approve before it
+          goes out.</li>
+      </ul>
+    </section>
+
+    <section id="phase1">
+      <div class="section-num">07</div>
+      <h2>Phase 1 — what's actually built</h2>
+      <ul>
+        <li><span class="check">✓</span> Full database schema live on Supabase, with row-level security on every table</li>
+        <li><span class="check">✓</span> Prospect list with filters (status, city, business type, search)</li>
+        <li><span class="check">✓</span> CSV import — column mapping, duplicate detection, suppression checks, bulk tagging</li>
+        <li><span class="check">✓</span> Prospect detail page — editable fields, bread-need tags, notes, manual research</li>
+        <li><span class="check">✓</span> AI email drafting via Claude — all four campaign modes, banned-phrase rules, "why am I emailing them" kept internal</li>
+        <li><span class="check">✓</span> Automatic quality check on every draft (length, CTA, banned phrases, relevance) with a visible score</li>
+        <li><span class="check">✓</span> Approval queue — preview, inline edit, approve, reject, regenerate with feedback, bulk approve, filters</li>
+        <li><span class="check">✓</span> Kanban pipeline with drag-and-drop status changes</li>
+        <li><span class="check">✓</span> Bosch Baking branding (navy/gold), responsive down to mobile</li>
+        <li><span class="open">→</span> Deployment — Netlify project and env vars are configured; the final upload step needs to run from a machine with normal internet access (see the message alongside this doc)</li>
+      </ul>
+      <p style="font-size:0.85rem;">
+        Everything above Phase 1's line in the original spec — automated web research,
+        AI-assisted rewrite loops, the Voice Training screen, the Campaign Builder UI, and all
+        of Phase 3 — is deliberately not built yet, though the schema already has a home for
+        each of them.
+      </p>
+    </section>
+
+    <section id="changes">
+      <div class="section-num">08</div>
+      <h2>Recommendations</h2>
+      <ul>
+        <li><strong>Automated web research</strong> (Phase 2) will need either a search API
+          (Claude with web search, or a dedicated one) or you'll keep filling in research
+          notes by hand — both are fine, but worth deciding before that phase starts, since it
+          affects cost per prospect.</li>
+        <li><strong>Voice Training UI</strong> — the <code class="inline">voice_examples</code>
+          and <code class="inline">voice_settings</code> tables exist and drafting already
+          reads from them, but there's no screen yet to paste in examples or edit banned
+          phrases — right now that's a direct database edit. Worth prioritizing early in Phase
+          2 since it directly improves draft quality.</li>
+        <li><strong>Reply ingestion</strong> needs a decision on how replies actually reach the
+          system — a Resend inbound webhook, forwarding to a dedicated address, or an IMAP
+          poll of your real inbox. Each has different setup cost; happy to lay out the
+          trade-offs when Phase 3 starts.</li>
+        <li><strong>Team access</strong> — right now any signed-in user has full access to
+          everything (reasonable for one person). If anyone besides you ever needs a login,
+          worth revisiting whether they should see every prospect or just their own.</li>
+      </ul>
+    </section>
+
+    <footer class="note">
+      Bosch Baking Outreach — Phase 1. Built on Next.js 16, Supabase, and the Claude API.
+    </footer>
+  </main>
+</div>
